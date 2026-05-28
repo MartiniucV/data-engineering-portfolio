@@ -1,6 +1,24 @@
 version: 2
 
-sources: 
+sources:
   - name: public
     tables:
       - name: raw_taxi_trips
+        description: "Date brute NYC Taxi ianuarie 2024"
+        columns:
+          - name: vendorid
+            description: "ID-ul companiei taxi"
+            tests:
+              - not_null
+          - name: tpep_pickup_datetime
+            description: "Data si ora preluarii"
+            tests:
+              - not_null
+          - name: trip_distance
+            description: "Distanta calatoriei in kilometri"
+            tests:
+              - not_null
+          - name: total_amount
+            description: "Suma totala a calatoriei"
+            tests:
+              - not_null
