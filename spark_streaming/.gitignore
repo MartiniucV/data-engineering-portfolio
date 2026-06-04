@@ -1,0 +1,8 @@
+delta/
+__pycache__/
+*.pyc
+target/
+.env
+spark-warehouse/
+derby.log
+metastore_db/

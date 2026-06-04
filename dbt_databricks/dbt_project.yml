@@ -1,0 +1,51 @@
+name: "nyc_taxi_databricks"
+version: "1.0.0"
+config-version: 2
+
+# Profile name — matches the key in profiles.yml (or profiles.yml.example)
+profile: "nyc_taxi_databricks"
+
+model-paths:    ["models"]
+analysis-paths: ["analyses"]
+test-paths:     ["tests"]
+seed-paths:     ["seeds"]
+macro-paths:    ["macros"]
+snapshot-paths: ["snapshots"]
+
+target-path:  "target"
+clean-targets:
+  - "target"
+  - "dbt_packages"
+
+vars:
+  # Override these per environment without touching SQL files
+  start_date: "2024-01-01"
+  end_date:   "2024-02-01"
+
+models:
+  nyc_taxi_databricks:
+    # All models write Delta format by default — key Databricks advantage over
+    # plain Parquet: ACID transactions, time travel, schema evolution, Z-ordering
+    +file_format: delta
+
+    # on_schema_change: "merge" adds new columns automatically without failing.
+    # Set to "fail" in production if you want strict schema enforcement.
+    +on_schema_change: merge
+
+    # Photon-optimised SQL: Databricks' vectorised query engine runs dbt-generated
+    # SQL transparently — no dbt changes needed to benefit from Photon.
+
+    staging:
+      # Views = no storage, no compute cost, always fresh
+      +materialized: view
+      # Staging models land in the <catalog>.<staging_schema> namespace
+      +schema: staging
+
+    marts:
+      # Tables = pre-computed, fast to query, can be Z-ordered and Auto-Optimized
+      +materialized: table
+      +schema: marts
+      # post-hook: OPTIMIZE runs after every full refresh to compact small files
+      # Delta Auto Optimize on Databricks handles this automatically on write,
+      # but explicit OPTIMIZE after bulk loads ensures larger file sizes.
+      +post_hook: "OPTIMIZE {{ this }} ZORDER BY (trip_date)"

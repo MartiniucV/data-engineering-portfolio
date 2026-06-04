@@ -1,0 +1,54 @@
+# dbt Databricks Connection Profile
+#
+# SETUP INSTRUCTIONS:
+#   1. Install the Databricks adapter:  pip install dbt-databricks
+#   2. Copy this file to ~/.dbt/profiles.yml
+#   3. Replace placeholder values with your workspace details
+#   4. Set the DATABRICKS_TOKEN env var (never hard-code tokens)
+#
+# WHERE TO FIND THESE VALUES:
+#   host      →  Databricks workspace URL (Settings → Workspace info)
+#              e.g. "adb-1234567890.12.azuredatabricks.net"
+#   http_path →  SQL Warehouse → Connection details → HTTP path
+#              e.g. "/sql/1.0/warehouses/abc123def456"
+#   catalog   →  Unity Catalog → Catalogs → your catalog name
+#   schema    →  Schema inside the catalog for your dev environment
+
+nyc_taxi_databricks:
+  target: dev
+
+  outputs:
+
+    # ── Development environment ────────────────────────────────────────────────
+    dev:
+      type: databricks
+      host: "adb-<workspace-id>.<region>.azuredatabricks.net"
+      http_path: "/sql/1.0/warehouses/<warehouse-id>"
+
+      # Always use an environment variable — never paste tokens in this file
+      token: "{{ env_var('DATABRICKS_TOKEN') }}"
+
+      # Unity Catalog three-level namespace: catalog.schema.table
+      catalog: "main"             # your Unity Catalog catalog
+      schema:  "nyc_taxi_dev"     # development schema (created automatically by dbt)
+      threads: 4                  # parallel model execution
+
+    # ── Production environment ─────────────────────────────────────────────────
+    prod:
+      type: databricks
+      host: "adb-<workspace-id>.<region>.azuredatabricks.net"
+      http_path: "/sql/1.0/warehouses/<prod-warehouse-id>"
+      token: "{{ env_var('DATABRICKS_TOKEN_PROD') }}"
+      catalog: "main"
+      schema:  "nyc_taxi_prod"
+      threads: 8
+
+    # ── CI environment (uses a smaller/cheaper SQL Warehouse) ──────────────────
+    ci:
+      type: databricks
+      host: "adb-<workspace-id>.<region>.azuredatabricks.net"
+      http_path: "/sql/1.0/warehouses/<ci-warehouse-id>"
+      token: "{{ env_var('DATABRICKS_TOKEN') }}"
+      catalog: "main"
+      schema:  "nyc_taxi_ci_{{ env_var('PR_NUMBER', 'local') }}"
+      threads: 4

@@ -1,0 +1,103 @@
+version: 2
+
+# ── Source definition ─────────────────────────────────────────────────────────
+# On Databricks, data is loaded into the raw schema via:
+#   - Auto Loader (cloudFiles): monitors S3/ADLS for new Parquet files
+#   - COPY INTO: one-shot bulk load from cloud storage
+#   - Databricks Workflows ingestion tasks
+#
+# The three-level name main.raw.taxi_trips maps to:
+#   Unity Catalog: catalog=main, schema=raw, table=taxi_trips
+sources:
+  - name: raw
+    description: >
+      Raw NYC Yellow Taxi trip data, loaded into Databricks Unity Catalog
+      from the NYC TLC public dataset. Refreshed monthly.
+    database: main       # Unity Catalog catalog
+    schema: raw
+
+    tables:
+      - name: taxi_trips
+        description: >
+          One row per taxi trip. Contains pickup/dropoff timestamps, location IDs,
+          distance, fares, and payment information.
+          Raw file: yellow_tripdata_2024-01.parquet from NYC TLC.
+
+        columns:
+          - name: tpep_pickup_datetime
+            description: Trip start timestamp (UTC). Some rows have erroneous years (2002, 2009).
+            tests:
+              - not_null
+
+          - name: tpep_dropoff_datetime
+            description: Trip end timestamp (UTC).
+            tests:
+              - not_null
+
+          - name: trip_distance
+            description: Distance of the trip in miles.
+            tests:
+              - not_null
+
+          - name: total_amount
+            description: Total amount charged to the passenger including all fees.
+            tests:
+              - not_null
+
+          - name: vendorid
+            description: "Taxi vendor: 1 = Creative Mobile Technologies, 2 = VeriFone."
+            tests:
+              - accepted_values:
+                  values: [1, 2]
+
+# ── Model definitions ─────────────────────────────────────────────────────────
+models:
+  - name: stg_taxi_trips
+    description: >
+      Cleaned and standardised NYC Taxi trip records.
+      Applies quality filters (valid year, positive distances/fares, temporal integrity)
+      and adds derived columns (pickup_date, pickup_hour, trip_duration_minutes).
+      Materialised as a view in main.nyc_taxi_dev.staging on Databricks.
+
+    columns:
+      - name: vendor_id
+        description: Taxi vendor identifier (1 or 2).
+        tests:
+          - not_null
+          - accepted_values:
+              values: [1, 2]
+
+      - name: pickup_datetime
+        description: Trip start timestamp. Always non-null after staging filters.
+        tests:
+          - not_null
+
+      - name: pickup_date
+        description: Calendar date of pickup, derived from pickup_datetime.
+        tests:
+          - not_null
+
+      - name: pickup_hour
+        description: Hour of pickup (0–23), for rush-hour segmentation.
+        tests:
+          - not_null
+
+      - name: trip_distance
+        description: Distance in miles. Always > 0 after staging filters.
+        tests:
+          - not_null
+
+      - name: fare_amount
+        description: Base fare in USD. Always > 0 after staging filters.
+        tests:
+          - not_null
+
+      - name: total_amount
+        description: Total amount charged, including tips and surcharges.
+        tests:
+          - not_null
+
+      - name: trip_duration_minutes
+        description: Trip duration in minutes (dropoff − pickup). Range 1–360 min.
+        tests:
+          - not_null
