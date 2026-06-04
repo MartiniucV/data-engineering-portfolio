@@ -1,0 +1,112 @@
+project:
+  name: "MedInsight Analytics Platform"
+  version: "1.0.0"
+  description: "Enterprise healthcare analytics platform for Romanian private clinic network"
+  client: "MedInsight Healthcare Network"
+
+clinics:
+  - id: "CLN001"
+    name: "MedInsight Cluj-Napoca"
+    city: "Cluj-Napoca"
+    county: "Cluj"
+    address: "Str. Clinicilor 5, Cluj-Napoca"
+    phone: "+40264596000"
+    capacity: 25
+  - id: "CLN002"
+    name: "MedInsight București"
+    city: "București"
+    county: "Ilfov"
+    address: "Bd. Unirii 22, București"
+    phone: "+40212345678"
+    capacity: 35
+  - id: "CLN003"
+    name: "MedInsight Timișoara"
+    city: "Timișoara"
+    county: "Timiș"
+    address: "Str. Brâncoveanu 8, Timișoara"
+    phone: "+40256123456"
+    capacity: 20
+  - id: "CLN004"
+    name: "MedInsight Iași"
+    city: "Iași"
+    county: "Iași"
+    address: "Bd. Independenței 14, Iași"
+    phone: "+40232987654"
+    capacity: 18
+  - id: "CLN005"
+    name: "MedInsight Brașov"
+    city: "Brașov"
+    county: "Brașov"
+    address: "Str. Lungă 3, Brașov"
+    phone: "+40268456789"
+    capacity: 15
+  - id: "CLN006"
+    name: "MedInsight Constanța"
+    city: "Constanța"
+    county: "Constanța"
+    address: "Bd. Tomis 45, Constanța"
+    phone: "+40241765432"
+    capacity: 12
+
+specialties:
+  - id: "SP01"
+    name: "Cardiologie"
+    avg_consultation_price: 280
+    avg_duration_min: 40
+  - id: "SP02"
+    name: "Pediatrie"
+    avg_consultation_price: 200
+    avg_duration_min: 35
+  - id: "SP03"
+    name: "Ortopedie"
+    avg_consultation_price: 260
+    avg_duration_min: 45
+  - id: "SP04"
+    name: "Neurologie"
+    avg_consultation_price: 300
+    avg_duration_min: 50
+  - id: "SP05"
+    name: "Dermatologie"
+    avg_consultation_price: 220
+    avg_duration_min: 30
+  - id: "SP06"
+    name: "Oftalmologie"
+    avg_consultation_price: 200
+    avg_duration_min: 30
+  - id: "SP07"
+    name: "Ginecologie"
+    avg_consultation_price: 250
+    avg_duration_min: 40
+  - id: "SP08"
+    name: "Psihiatrie"
+    avg_consultation_price: 300
+    avg_duration_min: 60
+  - id: "SP09"
+    name: "Oncologie"
+    avg_consultation_price: 400
+    avg_duration_min: 60
+  - id: "SP10"
+    name: "Medicina Interna"
+    avg_consultation_price: 240
+    avg_duration_min: 40
+
+pipeline:
+  batch_size: 1000
+  max_retries: 3
+  retry_delay_seconds: 5
+  enable_deduplication: true
+  enable_validation: true
+  enable_incremental: true
+
+quality:
+  max_null_rate: 0.05
+  max_duplicate_rate: 0.01
+  min_referential_integrity: 0.99
+  anomaly_zscore_threshold: 3.5
+
+logging:
+  level: INFO
+  format: "{time:YYYY-MM-DD HH:mm:ss} | {level} | {name}:{function}:{line} | {message}"
+  file: "logs/medinsight_{time:YYYY-MM-DD}.log"
+  rotation: "1 day"
+  retention: "30 days"

@@ -1,0 +1,94 @@
+/* MedInsight Analytics Platform - Custom Dark Theme */
+
+:root {
+    --primary: #00d4aa;
+    --primary-dark: #00b090;
+    --bg-dark: #0d1117;
+    --bg-card: #161b22;
+    --bg-hover: #1c2128;
+    --border: #30363d;
+    --text-primary: #e6edf3;
+    --text-secondary: #8b949e;
+    --success: #3fb950;
+    --warning: #d29922;
+    --danger: #f85149;
+    --info: #58a6ff;
+}
+
+/* Hide Streamlit default header */
+#MainMenu { visibility: hidden; }
+footer    { visibility: hidden; }
+header    { visibility: hidden; }
+
+/* Main background */
+.stApp {
+    background-color: var(--bg-dark);
+    color: var(--text-primary);
+}
+
+/* KPI card */
+.kpi-card {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 20px 24px;
+    transition: transform 0.2s ease;
+}
+.kpi-card:hover { transform: translateY(-2px); border-color: var(--primary); }
+.kpi-title   { color: var(--text-secondary); font-size: 0.85rem; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 8px; }
+.kpi-value   { color: var(--text-primary); font-size: 2rem; font-weight: 700; }
+.kpi-delta   { font-size: 0.80rem; margin-top: 4px; }
+.kpi-delta.up    { color: var(--success); }
+.kpi-delta.down  { color: var(--danger); }
+.kpi-delta.flat  { color: var(--text-secondary); }
+
+/* Section header */
+.section-header {
+    color: var(--primary);
+    font-size: 1.1rem;
+    font-weight: 600;
+    border-bottom: 1px solid var(--border);
+    padding-bottom: 8px;
+    margin-bottom: 16px;
+}
+
+/* Sidebar */
+[data-testid="stSidebar"] {
+    background-color: var(--bg-card) !important;
+    border-right: 1px solid var(--border);
+}
+
+/* Plotly chart background */
+.js-plotly-plot .plotly { border-radius: 8px; }
+
+/* Dataframe styling */
+.dataframe thead th {
+    background-color: var(--bg-hover) !important;
+    color: var(--primary) !important;
+}
+
+/* Metric containers */
+[data-testid="metric-container"] {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 12px 16px;
+}
+
+/* Brand header */
+.brand-header {
+    background: linear-gradient(135deg, #0d1117 0%, #161b22 50%, #0d1117 100%);
+    border-bottom: 1px solid var(--primary);
+    padding: 16px 24px;
+    margin-bottom: 24px;
+}
+.brand-title {
+    color: var(--primary);
+    font-size: 1.6rem;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+}
+.brand-subtitle {
+    color: var(--text-secondary);
+    font-size: 0.85rem;
+}

@@ -1,0 +1,94 @@
+version: 2
+
+sources:
+  - name: raw
+    schema: raw
+    description: "Raw ingested tables from the MedInsight data generator"
+    tables:
+      - name: clinics
+        description: "Physical clinic locations"
+        columns:
+          - name: clinic_id
+            tests: [unique, not_null]
+          - name: city
+            tests: [not_null]
+
+      - name: specialties
+        description: "Medical specialties reference"
+        columns:
+          - name: specialty_id
+            tests: [unique, not_null]
+
+      - name: services
+        description: "Medical services catalog"
+        columns:
+          - name: service_id
+            tests: [unique, not_null]
+          - name: base_price
+            tests:
+              - not_null
+              - dbt_utils.expression_is_true:
+                  expression: ">= 0"
+
+      - name: doctors
+        description: "Doctor profiles and assignments"
+        columns:
+          - name: doctor_id
+            tests: [unique, not_null]
+          - name: specialty
+            tests: [not_null]
+
+      - name: patients
+        description: "Patient demographic records"
+        columns:
+          - name: patient_id
+            tests: [unique, not_null]
+          - name: gender
+            tests:
+              - accepted_values:
+                  values: ["M", "F"]
+
+      - name: appointments
+        description: "Appointment transactions (20k records)"
+        columns:
+          - name: appointment_id
+            tests: [unique, not_null]
+          - name: status
+            tests:
+              - accepted_values:
+                  values: ["completed", "cancelled", "no_show", "rescheduled"]
+          - name: patient_id
+            tests:
+              - not_null
+              - relationships:
+                  to: source('raw', 'patients')
+                  field: patient_id
+          - name: doctor_id
+            tests:
+              - not_null
+              - relationships:
+                  to: source('raw', 'doctors')
+                  field: doctor_id
+
+      - name: billing
+        description: "Financial transactions per appointment"
+        columns:
+          - name: billing_id
+            tests: [unique, not_null]
+          - name: appointment_id
+            tests:
+              - relationships:
+                  to: source('raw', 'appointments')
+                  field: appointment_id
+
+      - name: prescriptions
+        description: "Medication prescriptions"
+        columns:
+          - name: prescription_id
+            tests: [unique, not_null]
+
+      - name: lab_results
+        description: "Clinical lab test results"
+        columns:
+          - name: lab_result_id
+            tests: [unique, not_null]
