@@ -1,5 +1,5 @@
 # Full Data Platform — Capstone Project
-
+![Dashboard Demo](demo.gif)
 An end-to-end data engineering platform that ingests live weather data from a
 public API, transforms and loads it into PostgreSQL, validates it with a quality
 framework, and visualises it in an interactive Streamlit dashboard.
