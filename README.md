@@ -201,3 +201,4 @@ python bronze.py && python silver.py && python gold.py && python time_travel.py
 
 *Built with Python 3.11 · PostgreSQL 15 · Apache Airflow 2.8 · Apache Kafka 7.6 ·
 PySpark 3.5 · Delta Lake 3.0 · dbt 1.8 · DuckDB 1.5 · Microsoft Fabric · Azure*
+# Updated
