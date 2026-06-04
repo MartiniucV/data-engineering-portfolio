@@ -53,3 +53,13 @@ Thumbs.db
 .coverage
 htmlcov/
 .pytest_cache/
+
+# Screenshots (add your own)
+screenshots/*.png
+screenshots/*.jpg
+screenshots/*.gif
+!screenshots/.gitkeep
+
+# dbt user config
+dbt/.user.yml
+dbt/package-lock.yml
