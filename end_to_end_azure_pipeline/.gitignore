@@ -1,0 +1,8 @@
+data/
+__pycache__/
+*.pyc
+*.parquet
+*.csv
+target/
+.env
+great_expectations/uncommitted/
