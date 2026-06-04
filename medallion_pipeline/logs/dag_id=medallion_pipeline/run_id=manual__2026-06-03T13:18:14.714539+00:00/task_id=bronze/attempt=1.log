@@ -1,0 +1,25 @@
+[2026-06-03T13:18:19.446+0000] {taskinstance.py:1957} INFO - Dependencies all met for dep_context=non-requeueable deps ti=<TaskInstance: medallion_pipeline.bronze manual__2026-06-03T13:18:14.714539+00:00 [queued]>
+[2026-06-03T13:18:19.451+0000] {taskinstance.py:1957} INFO - Dependencies all met for dep_context=requeueable deps ti=<TaskInstance: medallion_pipeline.bronze manual__2026-06-03T13:18:14.714539+00:00 [queued]>
+[2026-06-03T13:18:19.451+0000] {taskinstance.py:2171} INFO - Starting attempt 1 of 1
+[2026-06-03T13:18:19.459+0000] {taskinstance.py:2192} INFO - Executing <Task(BashOperator): bronze> on 2026-06-03 13:18:14.714539+00:00
+[2026-06-03T13:18:19.470+0000] {standard_task_runner.py:60} INFO - Started process 573 to run task
+[2026-06-03T13:18:19.475+0000] {standard_task_runner.py:87} INFO - Running: ['***', 'tasks', 'run', 'medallion_pipeline', 'bronze', 'manual__2026-06-03T13:18:14.714539+00:00', '--job-id', '6', '--raw', '--subdir', 'DAGS_FOLDER/medallion_dag.py', '--cfg-path', '/tmp/tmptedc3yqn']
+[2026-06-03T13:18:19.487+0000] {standard_task_runner.py:88} INFO - Job 6: Subtask bronze
+[2026-06-03T13:18:19.536+0000] {task_command.py:423} INFO - Running <TaskInstance: medallion_pipeline.bronze manual__2026-06-03T13:18:14.714539+00:00 [running]> on host 30afdbc5d42a
+[2026-06-03T13:18:19.594+0000] {taskinstance.py:2481} INFO - Exporting env vars: AIRFLOW_CTX_DAG_OWNER='***' AIRFLOW_CTX_DAG_ID='medallion_pipeline' AIRFLOW_CTX_TASK_ID='bronze' AIRFLOW_CTX_EXECUTION_DATE='2026-06-03T13:18:14.714539+00:00' AIRFLOW_CTX_TRY_NUMBER='1' AIRFLOW_CTX_DAG_RUN_ID='manual__2026-06-03T13:18:14.714539+00:00'
+[2026-06-03T13:18:19.595+0000] {subprocess.py:63} INFO - Tmp dir root location: /tmp
+[2026-06-03T13:18:19.596+0000] {subprocess.py:75} INFO - Running command: ['/usr/bin/bash', '-c', '/Users/martiniucvlad/.pyenv/versions/3.11.9/bin/python /Users/martiniucvlad/data-engineering-portfolio/medallion_pipeline/pipeline.py bronze']
+[2026-06-03T13:18:19.608+0000] {subprocess.py:86} INFO - Output:
+[2026-06-03T13:18:19.626+0000] {subprocess.py:93} INFO - /usr/bin/bash: line 1: /Users/martiniucvlad/.pyenv/versions/3.11.9/bin/python: No such file or directory
+[2026-06-03T13:18:19.627+0000] {subprocess.py:97} INFO - Command exited with return code 127
+[2026-06-03T13:18:19.635+0000] {taskinstance.py:2699} ERROR - Task failed with exception
+Traceback (most recent call last):
+  File "/home/airflow/.local/lib/python3.8/site-packages/airflow/models/taskinstance.py", line 433, in _execute_task
+    result = execute_callable(context=context, **execute_callable_kwargs)
+  File "/home/airflow/.local/lib/python3.8/site-packages/airflow/operators/bash.py", line 212, in execute
+    raise AirflowException(
+airflow.exceptions.AirflowException: Bash command failed. The command returned a non-zero exit code 127.
+[2026-06-03T13:18:19.641+0000] {taskinstance.py:1138} INFO - Marking task as FAILED. dag_id=medallion_pipeline, task_id=bronze, execution_date=20260603T131814, start_date=20260603T131819, end_date=20260603T131819
+[2026-06-03T13:18:19.652+0000] {standard_task_runner.py:107} ERROR - Failed to execute job 6 for task bronze (Bash command failed. The command returned a non-zero exit code 127.; 573)
+[2026-06-03T13:18:19.658+0000] {local_task_job_runner.py:234} INFO - Task exited with return code 1
+[2026-06-03T13:18:19.677+0000] {taskinstance.py:3281} INFO - 0 downstream tasks scheduled from follow-on schedule check
