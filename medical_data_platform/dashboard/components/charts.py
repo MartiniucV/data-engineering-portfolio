@@ -9,10 +9,18 @@ import pandas as pd
 
 
 DARK_TEMPLATE = "plotly_dark"
-PRIMARY_COLOR = "#00d4aa"
+PRIMARY_COLOR = "#d63031"
 COLOR_PALETTE = [
-    "#00d4aa", "#58a6ff", "#f78166", "#d29922", "#bc8cff",
-    "#3fb950", "#ffa657", "#79c0ff", "#ff7b72", "#56d364",
+    "#d63031",  # Medical red
+    "#00d4aa",  # Teal
+    "#74b9ff",  # Blue
+    "#f9ca24",  # Gold
+    "#a29bfe",  # Lavender
+    "#00b894",  # Green
+    "#fd79a8",  # Pink
+    "#fdcb6e",  # Orange-yellow
+    "#55efc4",  # Mint
+    "#e17055",  # Coral
 ]
 
 
@@ -22,13 +30,18 @@ def apply_dark_layout(fig: go.Figure, title: str = "", height: int = 400) -> go.
         paper_bgcolor="rgba(0,0,0,0)",
         plot_bgcolor="rgba(0,0,0,0)",
         height=height,
-        title=dict(text=title, font=dict(size=16, color="#e6edf3")),
-        font=dict(color="#8b949e"),
-        margin=dict(l=10, r=10, t=50, b=10),
-        legend=dict(bgcolor="rgba(0,0,0,0)", bordercolor="#30363d"),
+        title=dict(text=title, font=dict(size=14, color="#e8edf3", family="system-ui")),
+        font=dict(color="#7d8da8", family="system-ui"),
+        margin=dict(l=10, r=10, t=45, b=10),
+        legend=dict(bgcolor="rgba(0,0,0,0)", bordercolor="rgba(255,255,255,0.07)"),
+        hoverlabel=dict(
+            bgcolor="rgba(11,18,33,0.95)",
+            bordercolor="rgba(214,48,49,0.5)",
+            font=dict(color="#e8edf3"),
+        ),
     )
-    fig.update_xaxes(showgrid=True, gridcolor="#30363d", linecolor="#30363d")
-    fig.update_yaxes(showgrid=True, gridcolor="#30363d", linecolor="#30363d")
+    fig.update_xaxes(showgrid=True, gridcolor="rgba(255,255,255,0.05)", linecolor="rgba(255,255,255,0.06)")
+    fig.update_yaxes(showgrid=True, gridcolor="rgba(255,255,255,0.05)", linecolor="rgba(255,255,255,0.06)")
     return fig
 
 
@@ -77,7 +90,7 @@ def heatmap(
         z=pivot_df.values,
         x=pivot_df.columns.tolist(),
         y=pivot_df.index.tolist(),
-        colorscale=[[0, "#0d1117"], [0.5, "#00b090"], [1, "#00d4aa"]],
+        colorscale=[[0, "#060c16"], [0.35, "#6c1a1c"], [0.65, "#d63031"], [1, "#ff7675"]],
         showscale=True,
     ))
     return apply_dark_layout(fig, title, height)

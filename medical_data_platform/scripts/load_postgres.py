@@ -4,6 +4,7 @@ Loads all generated datasets into PostgreSQL with proper schemas,
 indexes, foreign keys, and materialized views.
 """
 
+import io
 import sys
 import time
 from pathlib import Path
@@ -33,16 +34,19 @@ CREATE SCHEMA IF NOT EXISTS analytics;
 DDL_TABLES = """
 -- ── raw.clinics ──────────────────────────────────────────────────────────────
 CREATE TABLE IF NOT EXISTS raw.clinics (
-    clinic_id       VARCHAR(10)  PRIMARY KEY,
-    name            VARCHAR(100) NOT NULL,
-    city            VARCHAR(50)  NOT NULL,
-    county          VARCHAR(50),
-    address         VARCHAR(200),
-    phone           VARCHAR(30),
-    capacity        INT,
-    opening_date    DATE,
-    is_active       BOOLEAN DEFAULT TRUE,
-    loaded_at       TIMESTAMPTZ DEFAULT NOW()
+    clinic_id               VARCHAR(10)  PRIMARY KEY,
+    name                    VARCHAR(150) NOT NULL,
+    city                    VARCHAR(50)  NOT NULL,
+    county                  VARCHAR(50),
+    region                  VARCHAR(50),
+    address                 VARCHAR(200),
+    phone                   VARCHAR(30),
+    capacity                INT,
+    opening_date            DATE,
+    specialization_focus    VARCHAR(100),
+    operational_cost        NUMERIC(12,2),
+    is_active               BOOLEAN DEFAULT TRUE,
+    loaded_at               TIMESTAMPTZ DEFAULT NOW()
 );
 
 -- ── raw.specialties ──────────────────────────────────────────────────────────
@@ -86,6 +90,7 @@ CREATE TABLE IF NOT EXISTS raw.doctors (
     is_active           BOOLEAN DEFAULT TRUE,
     email               VARCHAR(200),
     phone               VARCHAR(30),
+    burnout_risk_score  NUMERIC(5,1),
     loaded_at           TIMESTAMPTZ DEFAULT NOW()
 );
 
@@ -124,8 +129,8 @@ CREATE TABLE IF NOT EXISTS raw.appointments (
     actual_start                    TIMESTAMPTZ,
     actual_end                      TIMESTAMPTZ,
     status                          VARCHAR(20) NOT NULL,
-    waiting_time_minutes            INT,
-    consultation_duration_minutes   INT,
+    waiting_time_minutes            NUMERIC(8,1),
+    consultation_duration_minutes   NUMERIC(8,1),
     channel                         VARCHAR(50),
     urgency_level                   VARCHAR(20),
     referral_source                 VARCHAR(100),
@@ -150,6 +155,7 @@ CREATE TABLE IF NOT EXISTS raw.billing (
     tax_amount              NUMERIC(10,2),
     total_amount            NUMERIC(10,2),
     refund_amount           NUMERIC(10,2),
+    net_revenue             NUMERIC(10,2),
     payment_method          VARCHAR(50),
     payment_status          VARCHAR(30),
     insurance_type          VARCHAR(30),
@@ -279,8 +285,23 @@ class PostgresLoader:
     def create_schemas(self) -> None:
         self._execute_ddl(DDL_SCHEMAS, "schemas")
 
+    def _migrate_columns(self) -> None:
+        """Idempotently add new columns introduced in the enterprise upgrade."""
+        migrations = [
+            "ALTER TABLE raw.clinics ADD COLUMN IF NOT EXISTS region VARCHAR(50)",
+            "ALTER TABLE raw.clinics ADD COLUMN IF NOT EXISTS specialization_focus VARCHAR(100)",
+            "ALTER TABLE raw.clinics ADD COLUMN IF NOT EXISTS operational_cost NUMERIC(12,2)",
+            "ALTER TABLE raw.doctors ADD COLUMN IF NOT EXISTS burnout_risk_score NUMERIC(5,1)",
+            "ALTER TABLE raw.billing ADD COLUMN IF NOT EXISTS net_revenue NUMERIC(10,2)",
+        ]
+        with self.engine.begin() as conn:
+            for stmt in migrations:
+                conn.execute(text(stmt))
+        logger.info("Column migrations applied")
+
     def create_tables(self) -> None:
         self._execute_ddl(DDL_TABLES, "tables")
+        self._migrate_columns()
 
     def create_indexes(self) -> None:
         self._execute_ddl(DDL_INDEXES, "indexes")
@@ -288,25 +309,51 @@ class PostgresLoader:
     def create_materialized_views(self) -> None:
         self._execute_ddl(DDL_MATERIALIZED_VIEWS, "materialized views")
 
+    def _load_table_copy(self, df: pd.DataFrame, table_name: str, schema: str = "raw") -> int:
+        """Bulk-load via PostgreSQL COPY — 10-50× faster than INSERT for large tables."""
+        # Convert float columns whose values are all whole numbers (e.g. 25.0 → 25)
+        # to pandas nullable Int64 so CSV writes "25" not "25.0", satisfying INT columns.
+        df = df.copy()
+        for col in df.select_dtypes(include="float64").columns:
+            non_null = df[col].dropna()
+            if len(non_null) > 0 and (non_null == non_null.astype("int64")).all():
+                df[col] = df[col].astype("Int64")
+
+        buf = io.StringIO()
+        df.to_csv(buf, index=False, na_rep="")
+        buf.seek(0)
+        # Build explicit column list from CSV header (excludes DB-generated loaded_at)
+        buf.seek(0)
+        header_cols = buf.readline().strip().split(",")
+        buf.seek(0)
+        col_list = ", ".join(header_cols)
+
+        raw_conn = self.engine.raw_connection()
+        try:
+            with raw_conn.cursor() as cur:
+                cur.copy_expert(
+                    f"COPY {schema}.{table_name} ({col_list}) FROM STDIN WITH (FORMAT CSV, HEADER TRUE, NULL '')",
+                    buf,
+                )
+            raw_conn.commit()
+        finally:
+            raw_conn.close()
+        logger.debug(f"COPY loaded {len(df):,} rows into {schema}.{table_name}")
+        return len(df)
+
     def _load_table(
         self,
         df: pd.DataFrame,
         table_name: str,
         schema: str = "raw",
-        batch_size: int = 1000,
+        batch_size: int = 5000,
     ) -> int:
-        """Load a DataFrame into PostgreSQL using chunked inserts."""
+        """Chunked INSERT fallback for small tables."""
         total_rows = 0
         for i in range(0, len(df), batch_size):
             chunk = df.iloc[i : i + batch_size]
-            chunk.to_sql(
-                table_name,
-                self.engine,
-                schema=schema,
-                if_exists="append",
-                index=False,
-                method="multi",
-            )
+            chunk.to_sql(table_name, self.engine, schema=schema,
+                         if_exists="append", index=False, method="multi")
             total_rows += len(chunk)
         logger.debug(f"Loaded {total_rows:,} rows into {schema}.{table_name}")
         return total_rows
@@ -343,10 +390,13 @@ class PostgresLoader:
                     continue
 
                 progress.update(task, description=f"Loading {table}...")
-                df = pd.read_csv(path)
-                # Truncate for idempotency
+                df = pd.read_csv(path, low_memory=False)
                 self._truncate_table(table, schema="raw")
-                rows = self._load_table(df, table, schema="raw", batch_size=self.settings.data.batch_size)
+                # Use COPY for large tables, INSERT for small ones
+                if len(df) > 10_000:
+                    rows = self._load_table_copy(df, table, schema="raw")
+                else:
+                    rows = self._load_table(df, table, schema="raw")
                 results[table] = rows
                 progress.advance(task)
 

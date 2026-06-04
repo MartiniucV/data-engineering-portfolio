@@ -1,40 +1,36 @@
 {{ config(materialized='table', schema='analytics') }}
 
+-- Aggregated at month level for performance on 2M-row datasets
 select
-    appointment_date    as ops_date,
-    appointment_year    as ops_year,
-    appointment_month   as ops_month,
+    date_trunc('month', appointment_date)::date  as ops_date,
+    appointment_year                              as ops_year,
+    appointment_month                             as ops_month,
     clinic_id,
     clinic_city,
     specialty,
-    total_appointments,
-    completed,
-    cancelled,
-    no_shows,
-    rescheduled,
-    active_doctors,
-    unique_patients,
-    avg_wait_minutes,
-    max_wait_minutes,
-    avg_consult_minutes,
-    completion_rate,
-    cancellation_rate,
-    no_show_rate,
-    daily_revenue,
-
-    -- 7-day moving averages
+    sum(total_appointments)     as total_appointments,
+    sum(completed)              as completed,
+    sum(cancelled)              as cancelled,
+    sum(no_shows)               as no_shows,
+    sum(rescheduled)            as rescheduled,
+    max(active_doctors)         as active_doctors,
+    sum(unique_patients)        as unique_patients,
+    round(avg(avg_wait_minutes)::numeric, 1)   as avg_wait_minutes,
+    max(max_wait_minutes)                      as max_wait_minutes,
+    round(avg(avg_consult_minutes)::numeric, 1) as avg_consult_minutes,
     round(
-        avg(completion_rate)   over (partition by clinic_id, specialty order by appointment_date rows between 6 preceding and current row),
-        4
-    )                   as ma7_completion_rate,
+        sum(completed)::numeric / nullif(sum(total_appointments), 0), 4
+    )                           as completion_rate,
     round(
-        avg(no_show_rate) over (partition by clinic_id, specialty order by appointment_date rows between 6 preceding and current row),
-        4
-    )                   as ma7_no_show_rate,
+        sum(cancelled)::numeric / nullif(sum(total_appointments), 0), 4
+    )                           as cancellation_rate,
     round(
-        avg(avg_wait_minutes) over (partition by clinic_id, specialty order by appointment_date rows between 6 preceding and current row),
-        1
-    )                   as ma7_avg_wait,
-
-    now()               as dbt_updated_at
+        sum(no_shows)::numeric  / nullif(sum(total_appointments), 0), 4
+    )                           as no_show_rate,
+    sum(daily_revenue)          as daily_revenue,
+    null::numeric               as ma7_completion_rate,
+    null::numeric               as ma7_no_show_rate,
+    null::numeric               as ma7_avg_wait,
+    now()                       as dbt_updated_at
 from {{ ref('int_operational_metrics') }}
+group by 1, 2, 3, 4, 5, 6

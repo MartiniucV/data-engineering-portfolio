@@ -23,40 +23,56 @@ if css_path.exists():
     with open(css_path) as f:
         st.markdown(f"<style>{f.read()}</style>", unsafe_allow_html=True)
 
-# Brand header
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+from components.kpi_cards import brand_header, kpi_card, kpi_row
+
+brand_header("Romanian Private Healthcare Network — Enterprise Analytics")
+
 st.markdown("""
-<div class="brand-header">
-    <div class="brand-title">🏥 MedInsight Analytics Platform</div>
-    <div class="brand-subtitle">Enterprise Healthcare Analytics — Romania Private Clinic Network</div>
+<div style="margin:28px 0 20px;">
+  <p style="font-size:1.05rem;color:#e8edf3;font-weight:600;margin-bottom:6px;">
+    MedInsight Analytics Platform
+  </p>
+  <p style="color:#7d8da8;font-size:0.88rem;line-height:1.7;">
+    A production-grade data platform centralising clinical, financial, and operational
+    intelligence for a 60-clinic network across Romania.
+    Built with <strong style="color:#e8edf3;">PostgreSQL · dbt · Python · Streamlit</strong>.
+  </p>
 </div>
 """, unsafe_allow_html=True)
 
-st.markdown("""
-### Welcome to MedInsight Analytics Platform
-
-This platform provides executive-grade analytics for a Romanian private healthcare network
-operating clinics in **Cluj-Napoca, București, Timișoara, Iași, Brașov,** and **Constanța**.
-
----
-
-#### Navigate using the sidebar pages:
-
-| Page | Description |
-|------|-------------|
-| 📊 **Executive Overview** | Revenue KPIs, appointments, YoY growth, clinic comparison |
-| 👨‍⚕️ **Doctor Performance** | Rankings, utilization, ratings, revenue contribution |
-| 👤 **Patient Analytics** | Demographics, retention, cohorts, LTV segmentation |
-| 💰 **Financial Analytics** | Revenue trends, profitability, payment methods |
-| ⚙️ **Operational Metrics** | Cancellations, no-shows, wait times, peak hours |
-| 🔮 **Predictive Analytics** | Forecasts, churn risk, no-show prediction |
-
----
-""")
+st.markdown('<div class="section-title">Platform Navigation</div>', unsafe_allow_html=True)
 
 col1, col2, col3 = st.columns(3)
 with col1:
-    st.info("**Data Period**: Jan 2023 – Dec 2024")
+    st.markdown("""
+    **📊 Executive Overview**
+    Revenue KPIs, YoY growth, clinic leaderboard, specialty mix
+
+    **👨‍⚕️ Doctor Performance**
+    Rankings, utilization gauges, rating analysis, heatmaps
+    """)
 with col2:
-    st.info("**Coverage**: 6 Clinics | 50 Doctors | 5,000 Patients")
+    st.markdown("""
+    **👤 Patient Analytics**
+    Demographics, cohort retention, LTV, churn, geography
+
+    **💰 Financial Analytics**
+    Revenue trends, service profitability, payment methods
+    """)
 with col3:
-    st.info("**Tech Stack**: PostgreSQL · dbt · Python · Streamlit")
+    st.markdown("""
+    **⚙️ Operational Metrics**
+    Cancellations, no-shows, wait times, occupancy gauges
+
+    **🔮 Predictive Analytics**
+    Revenue forecast, churn AI, no-show risk, anomaly detection
+    """)
+
+st.markdown("---")
+kpi_row([
+    kpi_card("🏥", "Clinic Network",  "60 Clinics",    "6 Regions of Romania", True, "red"),
+    kpi_card("🩺", "Medical Staff",   "500 Doctors",   "10 Specialties",       True, "teal"),
+    kpi_card("👤", "Patients",        "500,000",        "2020 – 2024",          True, "blue"),
+    kpi_card("📅", "Appointments",    "2,000,000+",    "5 Years of Data",      True, "gold"),
+])
