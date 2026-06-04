@@ -92,7 +92,7 @@ if not vol.empty:
         """, **params)
         if not rate.empty:
             st.plotly_chart(line_chart(rate,"month",["cancel_pct","noshw_pct"],
-                                       "Disruption Rates (%)",380), use_container_width=True)
+                                       "Disruption Rates (%)",height=380), use_container_width=True)
 
 # ── Cancellation reasons ──────────────────────────────────────────────────────
 section_header("Cancellation & No-Show Drivers", "🔍")
@@ -114,7 +114,7 @@ with col2:
         FROM analytics.fct_appointments {where} GROUP BY 1 ORDER BY noshw_rate DESC
     """, **params)
     if not ch.empty:
-        st.plotly_chart(bar_chart(ch,"channel","noshw_rate","No-Show Rate by Channel (%)",360),
+        st.plotly_chart(bar_chart(ch,"channel","noshw_rate","No-Show Rate by Channel (%)",height=360),
                         use_container_width=True)
 
 # ── Wait time heatmap ─────────────────────────────────────────────────────────
