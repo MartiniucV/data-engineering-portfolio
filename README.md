@@ -2,7 +2,7 @@
 
 **Vlad Martiniuc** · [GitHub](https://github.com/MartiniucV) · [martiniuc.vladut@gmail.com](mailto:martiniuc.vladut@gmail.com)
 
-13 end-to-end data engineering projects spanning the full modern data stack.
+14 end-to-end data engineering projects spanning the full modern data stack.
 Organised by technology layer: foundational batch/streaming pipelines, Databricks
 lakehouse, and Azure cloud services including Microsoft Fabric.
 
@@ -38,21 +38,27 @@ lakehouse, and Azure cloud services including Microsoft Fabric.
 | 12 | ⚖️ **Fabric vs Databricks** | RetailBank: same pipeline built both ways, cost compared | DuckDB · pandas · Delta · Jupyter | [`fabric_vs_databricks_comparison/`](./fabric_vs_databricks_comparison) |
 | 13 | 🌍 **End-to-End Azure** | SmartCity AQI monitoring: ingest → transform → quality → dashboard | pandas · Airflow · GE · Streamlit | [`end_to_end_azure_pipeline/`](./end_to_end_azure_pipeline) |
 
+### 🏥 Enterprise Analytics — PostgreSQL, dbt, Python, Streamlit
+
+| # | Project | Business Problem | Tech Stack | Folder |
+|---|---------|-----------------|------------|--------|
+| 14 | 🏥 **MedInsight Analytics** | Romanian private clinic network: 2M appointments, 500k patients, 60 clinics → executive BI platform | PostgreSQL · dbt · Python · Streamlit · scikit-learn | [`medical_data_platform/`](./medical_data_platform) |
+
 ---
 
 ## 🏛️ Architecture Overview
 
 ```
-  LOCAL STACK (1–4)          DATABRICKS (5–8)         AZURE + FABRIC (9–13)
-  ─────────────────          ─────────────────         ──────────────────────
-  PostgreSQL + dbt           Delta Lake                 Microsoft Fabric
-  Airflow DAGs               PySpark + Photon           OneLake + DirectLake
-  Kafka Streaming            Unity Catalog              Azure Data Factory
-  Streamlit Dashboard        Delta Live Tables          Azure Functions
-                             Structured Streaming       ADLS Gen2 + Delta
-                             AutoLoader                 Databricks on Azure
-                                                        Great Expectations
-                                                        Azure Managed Airflow
+  LOCAL STACK (1–4)          DATABRICKS (5–8)         AZURE + FABRIC (9–13)      ENTERPRISE ANALYTICS (14)
+  ─────────────────          ─────────────────         ──────────────────────     ─────────────────────────
+  PostgreSQL + dbt           Delta Lake                 Microsoft Fabric           Medallion Architecture
+  Airflow DAGs               PySpark + Photon           OneLake + DirectLake       dbt 22-model project
+  Kafka Streaming            Unity Catalog              Azure Data Factory         2M row PostgreSQL
+  Streamlit Dashboard        Delta Live Tables          Azure Functions            Streamlit + Plotly
+                             Structured Streaming       ADLS Gen2 + Delta          scikit-learn + statsmodels
+                             AutoLoader                 Databricks on Azure        Revenue forecasting
+                                                        Great Expectations         Patient churn ML
+                                                        Azure Managed Airflow      Custom quality framework
 ```
 
 ---
@@ -122,6 +128,28 @@ Streamlit dashboard — all runnable in one command: `python orchestration/pipel
 
 ---
 
+### 🏥 14 · MedInsight Analytics Platform
+> [`medical_data_platform/`](./medical_data_platform)
+
+A Romanian private healthcare network operating 60 clinics needs a single source
+of truth across clinical, financial, and operational data. MedInsight ingests
+**2M appointments / 500k patients / 1.4M billing records** (2020–2024), transforms
+them through a Bronze→Silver→Gold medallion pipeline, and surfaces everything in a
+6-page premium Streamlit dashboard with ML-powered forecasting and churn analysis.
+
+**Wow factor:** 2M rows loaded into PostgreSQL in **3 minutes** via `COPY`, 22 dbt
+models compile in **26 seconds**, and the dashboard returns aggregated KPIs in
+**< 3 seconds** — all on a local machine with no cloud required.
+
+Key highlights:
+- Full **dbt project**: 7 staging + 5 intermediate + 9 mart models, 29 tests
+- **Vectorised data generation**: NumPy replaces Python loops — 2M appointments in ~100s
+- **Custom quality framework**: 39 checks (nulls, uniqueness, referential integrity, Z-score anomalies)
+- **ML suite**: Holt-Winters revenue forecast, GBT no-show prediction, RFM churn segmentation, Isolation Forest anomaly detection
+- **Premium dark dashboard**: glassmorphism KPI cards, medical-red Plotly theme, utilisation gauges
+
+---
+
 ## 🛠️ Skills Demonstrated
 
 | Category | Technologies |
@@ -135,6 +163,7 @@ Streamlit dashboard — all runnable in one command: `python orchestration/pipel
 | **Data governance** | Unity Catalog, Row/Column-level security, Lineage |
 | **Data quality** | Great Expectations, DLT expectations, dbt tests |
 | **Serving / BI** | Streamlit, Power BI DirectLake, Databricks SQL Warehouse |
+| **ML / Analytics** | scikit-learn, statsmodels, Holt-Winters forecasting, Isolation Forest, RFM segmentation |
 | **Infrastructure** | Docker, ADLS Gen2, Azure Container Apps, Event Grid |
 | **Engineering practices** | Idempotent pipelines, exactly-once streaming, cost optimisation |
 
@@ -163,6 +192,9 @@ data-engineering-portfolio/
     ├── databricks_azure_integration/   ← 11: AutoLoader + DLT + ADLS
     ├── fabric_vs_databricks_comparison/← 12: Same pipeline, two ways
     └── end_to_end_azure_pipeline/      ← 13: Full Azure stack
+│
+└── ── ENTERPRISE ANALYTICS ───────────────────────
+    └── medical_data_platform/          ← 14: MedInsight — 2M rows, dbt, ML, Streamlit
 ```
 
 ---
@@ -199,6 +231,5 @@ python bronze.py && python silver.py && python gold.py && python time_travel.py
 
 ---
 
-*Built with Python 3.11 · PostgreSQL 15 · Apache Airflow 2.8 · Apache Kafka 7.6 ·
-PySpark 3.5 · Delta Lake 3.0 · dbt 1.8 · DuckDB 1.5 · Microsoft Fabric · Azure*
-# Updated
+*Built with Python 3.11 · PostgreSQL 16 · Apache Airflow 2.8 · Apache Kafka 7.6 ·
+PySpark 3.5 · Delta Lake 3.0 · dbt 1.7 · DuckDB 1.5 · Microsoft Fabric · Azure · Streamlit · scikit-learn*
