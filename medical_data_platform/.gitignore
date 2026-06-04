@@ -54,11 +54,8 @@ Thumbs.db
 htmlcov/
 .pytest_cache/
 
-# Screenshots (add your own)
-screenshots/*.png
-screenshots/*.jpg
-screenshots/*.gif
-!screenshots/.gitkeep
+# Screenshots — committed intentionally
+!screenshots/*.png
 
 # dbt user config
 dbt/.user.yml

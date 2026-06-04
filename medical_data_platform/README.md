@@ -235,19 +235,39 @@ medical_data_platform/
 
 ## Screenshots
 
-> *Add screenshots after first run — replace placeholders below.*
+### Home
 
-| Executive Overview | Doctor Performance |
-|---|---|
-| `screenshots/01_executive_overview.png` | `screenshots/02_doctor_performance.png` |
+![Home](screenshots/00_home.png)
 
-| Patient Analytics | Financial Analytics |
-|---|---|
-| `screenshots/03_patient_analytics.png` | `screenshots/04_financial_analytics.png` |
+### Executive Overview
+*RON 251M net revenue · 798k appointments · 323k active patients · 71.9% completion rate*
 
-| Operational Metrics | Predictive Analytics |
-|---|---|
-| `screenshots/05_operational_metrics.png` | `screenshots/06_predictive_analytics.png` |
+![Executive Overview](screenshots/01_executive_overview.png)
+
+### Doctor Performance
+*495 doctors ranked by revenue, utilisation gauges, rating scatter, appointment heatmap*
+
+![Doctor Performance](screenshots/02_doctor_performance.png)
+
+### Patient Analytics
+*500k patient demographics, cohort retention matrix, LTV analysis, churn risk*
+
+![Patient Analytics](screenshots/03_patient_analytics.png)
+
+### Financial Analytics
+*RON 310M gross revenue, monthly trend, service profitability, payment methods*
+
+![Financial Analytics](screenshots/04_financial_analytics.png)
+
+### Operational Metrics
+*Network health gauges, cancellation drivers, wait-time heatmap by day × hour*
+
+![Operational Metrics](screenshots/05_operational_metrics.png)
+
+### Predictive Analytics
+*6-month revenue forecast, no-show risk factors, churn segments, anomaly detection*
+
+![Predictive Analytics](screenshots/06_predictive_analytics.png)
 
 ---
 
