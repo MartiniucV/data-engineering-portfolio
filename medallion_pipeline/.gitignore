@@ -1,0 +1,9 @@
+logs/
+bronze/
+silver/
+data/
+*.duckdb
+*.parquet
+__pycache__/
+*.pyc
+.env
