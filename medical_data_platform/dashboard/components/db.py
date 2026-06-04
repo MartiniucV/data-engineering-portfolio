@@ -24,12 +24,12 @@ def get_engine():
 
 
 @st.cache_data(ttl=300)
-def query(_sql: str, **params) -> pd.DataFrame:
+def query(sql: str, **params) -> pd.DataFrame:
     """Execute SQL and return DataFrame. Result is cached for 5 minutes."""
     engine = get_engine()
     try:
         with engine.connect() as conn:
-            return pd.read_sql(text(_sql), conn, params=params)
+            return pd.read_sql(text(sql), conn, params=params)
     except Exception as e:
         logger.error(f"Query failed: {e}")
         st.error(f"Database error: {e}")
