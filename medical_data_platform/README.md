@@ -400,7 +400,7 @@ Results: `data/exports/quality_report.json`
 
 ---
 
-## Interview Talking Points
+## Key Engineering Decisions
 
 ### Why medallion architecture?
 Separates raw ingestion from business logic. Bronze is immutable — any bug can be replayed from source. Silver enforces types and removes duplicates. Gold is dbt-managed and test-covered. Each layer has a clear contract.

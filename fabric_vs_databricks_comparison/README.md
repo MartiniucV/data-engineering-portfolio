@@ -56,7 +56,7 @@ For the RetailBank scenario (batch ETL + BI, no ML), **Fabric F64 is 30% cheaper
 and requires less engineering effort**. The Databricks approach is the right choice
 only when ML workloads, complex streaming, or multi-cloud requirements exist.
 
-## Interview Talking Points
+## Architecture Discussion
 
 - **"Can they co-exist?"** → "Yes. Databricks reads from OneLake via ABFSS connector.
   Fabric Shortcuts expose Databricks-written Delta tables. Many enterprises use both:

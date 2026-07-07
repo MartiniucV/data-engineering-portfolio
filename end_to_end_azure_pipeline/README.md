@@ -54,9 +54,11 @@ streamlit run visualization/streamlit_dashboard.py
 
 ## What Makes This Interview-Ready
 
-### Real Business Context
-This isn't a demo — it mirrors what the city of Amsterdam actually built on Azure
-for their Smart City Pulse platform. The $188/month cost estimate is real.
+### Grounded in a Real Regulatory Constraint
+The scenario is fictional (SmartCity), but the alerting threshold isn't — it's
+built against EU Directive 2008/50/EC's air-quality limits, not an arbitrary
+schema. The $188/month cost estimate is a line-by-line calculation from current
+Azure UK South pricing (see `architecture.md`), not a rounded guess.
 
 ### Azure Service Mapping
 Every single function, class, and variable has a comment explaining what Azure
@@ -74,7 +76,7 @@ and EU threshold monitoring. Quality results exported as JSON for Azure Monitor.
 Delta storage lifecycle policy moves old Bronze files to Cool/Archive tiers.
 Scale-to-zero on Container Apps. Serverless Azure Functions. Total: ~$188/month.
 
-## Interview Talking Points
+## Engineering Discussion
 
 - **"Walk me through the pipeline"** → 8 stations → API ingest → Parquet → PySpark clean
   → Delta Gold tables → 15 quality checks → Streamlit dashboard. SLA: 3 hours start-to-finish.

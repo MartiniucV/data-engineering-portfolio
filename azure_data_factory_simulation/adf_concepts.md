@@ -95,7 +95,7 @@ For sources that don't support parallel reads, use Azure Blob as a staging area:
 - Data Flow (1-hour Spark cluster, 8 vCores): **$2.40/month**
 - **Total: ~$3/month** for the ETL pipeline
 
-## Interview Talking Points
+## Key Engineering Decisions
 
 1. **"What's the difference between Copy Activity and Data Flow?"**
    Copy Activity = data movement (optimised for throughput, no Spark).

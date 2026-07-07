@@ -72,8 +72,8 @@ RetailCo (200 stores, 2M customers) migrates to Microsoft Fabric.
 Simulates OneLake structure, SQL Analytics Endpoint via DuckDB, and
 Power BI DirectLake patterns on 200K generated e-commerce orders.
 
-**Wow factor:** DuckDB GROUP BY on 200K orders in ~40ms — exactly what
-Fabric's SQL Analytics Endpoint delivers on billions of rows via Photon.
+**Key result:** DuckDB GROUP BY on 200K orders in ~40ms — the same query pattern
+Fabric's SQL Analytics Endpoint runs on billions of rows via Photon.
 
 ---
 
@@ -84,8 +84,8 @@ FinanceFlow (500K tx/day) consolidates transactions from REST API, CSV drops,
 and PostgreSQL replica. Demonstrates Copy Activity, Mapping Data Flow
 (velocity-based fraud detection), and Pipeline orchestration with retry + alerts.
 
-**Wow factor:** The velocity check caught 127 fraud cases in week 1 by
-detecting customers with > 5 transactions in a 60-minute rolling window.
+**Key result:** The velocity check (simulated) flags customers with > 5
+transactions in a 60-minute rolling window — 127 cases in the week-1 test run.
 
 ---
 
@@ -96,9 +96,9 @@ ManufactureX IoT pipeline (10K sensors, 28.8M records/day). AutoLoader
 with checkpoint-based incremental ingestion, DLT expectations with quarantine
 routing, and storage abstraction layer mirroring ADLS Gen2 mount patterns.
 
-**Wow factor:** A $180K plant shutdown from bad sensor data motivated this
-pipeline. DLT `@expect_or_quarantine` now routes 8% invalid readings to a
-quarantine table before they reach ML anomaly detection models.
+**Key result:** Modelled on a common IoT failure mode — bad sensor data reaching
+downstream models undetected. DLT `@expect_or_quarantine` routes invalid
+readings (8% in the simulated data) to a quarantine table instead.
 
 ---
 
@@ -109,9 +109,9 @@ The same RetailBank transaction pipeline built twice. Fabric wins on cost
 and simplicity for BI-centric teams; Databricks wins for ML/streaming.
 Includes side-by-side Jupyter notebook and a structured ADR decision framework.
 
-**Wow factor:** Running both implementations on the same dataset reveals
-the MERGE vs TRUNCATE difference — critical for incremental pipelines with
-late-arriving data.
+**Key result:** Running both implementations on the same dataset makes the
+MERGE vs TRUNCATE difference concrete — the detail that matters most for
+incremental pipelines with late-arriving data.
 
 ---
 
@@ -122,9 +122,9 @@ SmartCity AQI monitoring platform built to EU Directive 2008/50/EC.
 Every file maps to a real Azure service with cost estimates. Total production
 cost: **$188/month** for a pipeline processing 8 stations × 365 days.
 
-**Wow factor:** The complete architecture — API ingest → PySpark transform →
+**Key result:** The full architecture — API ingest → PySpark transform →
 Delta storage lifecycle → Airflow orchestration → Great Expectations quality →
-Streamlit dashboard — all runnable in one command: `python orchestration/pipeline_dag.py`
+Streamlit dashboard — runs end-to-end with one command: `python orchestration/pipeline_dag.py`
 
 ---
 
@@ -137,7 +137,7 @@ of truth across clinical, financial, and operational data. MedInsight ingests
 them through a Bronze→Silver→Gold medallion pipeline, and surfaces everything in a
 6-page premium Streamlit dashboard with ML-powered forecasting and churn analysis.
 
-**Wow factor:** 2M rows loaded into PostgreSQL in **3 minutes** via `COPY`, 22 dbt
+**Key result:** 2M rows loaded into PostgreSQL in **3 minutes** via `COPY`, 22 dbt
 models compile in **26 seconds**, and the dashboard returns aggregated KPIs in
 **< 3 seconds** — all on a local machine with no cloud required.
 
@@ -186,12 +186,12 @@ data-engineering-portfolio/
 ├── dbt_databricks/           ← 7: dbt on Databricks SQL Warehouse
 ├── unity_catalog_demo/       ← 8: Unity Catalog governance
 │
-└── ── AZURE + FABRIC ─────────────────────────────
-    ├── fabric_lakehouse_simulation/    ← 9:  Fabric OneLake + DuckDB
-    ├── azure_data_factory_simulation/  ← 10: ADF Copy + Data Flow
-    ├── databricks_azure_integration/   ← 11: AutoLoader + DLT + ADLS
-    ├── fabric_vs_databricks_comparison/← 12: Same pipeline, two ways
-    └── end_to_end_azure_pipeline/      ← 13: Full Azure stack
+├── ── AZURE + FABRIC ─────────────────────────────
+│   ├── fabric_lakehouse_simulation/    ← 9:  Fabric OneLake + DuckDB
+│   ├── azure_data_factory_simulation/  ← 10: ADF Copy + Data Flow
+│   ├── databricks_azure_integration/   ← 11: AutoLoader + DLT + ADLS
+│   ├── fabric_vs_databricks_comparison/← 12: Same pipeline, two ways
+│   └── end_to_end_azure_pipeline/      ← 13: Full Azure stack
 │
 └── ── ENTERPRISE ANALYTICS ───────────────────────
     └── medical_data_platform/          ← 14: MedInsight — 2M rows, dbt, ML, Streamlit

@@ -125,7 +125,7 @@ Azure Monitor Alerts  →  Teams / PagerDuty on anomaly
 At ManufactureX's scale, the $180K plant shutdown that triggered this
 project pays for **55 months** of this pipeline.
 
-## Interview Talking Points
+## Architecture Discussion
 
 1. **"What's the difference between a mount and an External Location?"**
    Mounts are workspace-scoped and not governed by Unity Catalog — any user on

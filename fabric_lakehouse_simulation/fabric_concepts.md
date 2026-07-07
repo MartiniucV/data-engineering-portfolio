@@ -74,7 +74,7 @@ Fabric uses Capacity Units (CUs) — a shared pool across all workloads:
 - Mostly BI + SQL users (low Spark intensity) → CU model cheaper than per-DBU
 - Small team with mixed skills → no-code tools save engineering time
 
-## Interview Talking Points
+## Design Considerations
 
 1. **"Explain OneLake"** → "One logical data lake per Fabric tenant. All Lakehouses,
    Warehouses, and semantic models point to the same physical storage.

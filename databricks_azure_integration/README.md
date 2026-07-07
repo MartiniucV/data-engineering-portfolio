@@ -52,7 +52,7 @@ python medallion_with_autoloader.py         # Incremental ingestion with checkpo
 python delta_live_tables_simulation.py      # DLT quality pipeline
 ```
 
-## Business Impact
+## Business Impact (simulated)
 
 | Problem | Solution | Result |
 |---|---|---|
@@ -77,7 +77,7 @@ At ManufactureX's full scale (10,000 sensors):
 - DLT enhanced autoscaling: 1–8 nodes, saves ~60% during off-peak hours
 - Gold table ZORDER BY (plant_id, hour): 85% reduction in query scan size
 
-## Interview Talking Points
+## Architecture Discussion
 
 - **"Why AutoLoader over spark.read?"** → "AutoLoader uses file change notifications
   or directory listing to find only NEW files. With 34K files/day after 1 year that's

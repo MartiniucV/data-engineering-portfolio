@@ -63,7 +63,7 @@ jupyter lab notebooks/
 | BI user onboarding | DBA help needed | Self-service Power BI |
 | Data engineering effort | 40 hrs/month | 15 hrs/month |
 
-## Interview Talking Points
+## Design Considerations
 
 - **DirectLake**: "Power BI reads Delta files directly from OneLake — no data import,
   no DirectQuery overhead. Sub-second refresh on billions of rows."
@@ -71,5 +71,5 @@ jupyter lab notebooks/
   tenant. Every Lakehouse, Warehouse, and notebook sees the same storage."
 - **Shortcuts**: "Zero-copy pointers to external storage. Our supplier data on S3
   appears as a Delta table in 60 seconds — no pipeline."
-- **Wow factor**: "I ran a GROUP BY on 200K orders in DuckDB locally in 40ms.
-  That's exactly what the Fabric SQL Warehouse does on billions of rows via Photon."
+- **Key result**: "I ran a GROUP BY on 200K orders in DuckDB locally in 40ms —
+  the same query pattern the Fabric SQL Warehouse runs on billions of rows via Photon."

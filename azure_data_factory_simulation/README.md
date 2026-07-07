@@ -49,7 +49,7 @@ python pipelines/pipeline_orchestration.py  # Full orchestrated pipeline
 python pipelines/pipeline_orchestration.py
 ```
 
-## Business Outcomes
+## Business Outcomes (simulated)
 
 | Requirement | Solution | Result |
 |---|---|---|
@@ -70,7 +70,7 @@ python pipelines/pipeline_orchestration.py
 - The velocity check requires streaming-style stateful aggregation which dbt can't do natively
 - Non-engineers can modify the risk scoring logic in the Data Flow visual editor
 
-## Interview Talking Points
+## Key Engineering Decisions
 
 - **"How do you handle schema drift?"** → "ADF Copy Activity 'Allow schema drift'
   passes unknown columns to the sink and optionally writes them to `_rescued_data`."
